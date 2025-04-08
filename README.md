@@ -52,7 +52,7 @@ pip install -r requirements.txt
 
 ### 5. Run the Script
 ```bash
-python send_mail_merge_smtp.py
+python main.py
 ```
 
 ## 💬 Optional: Change the Sender Name in Gmail
