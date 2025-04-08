@@ -181,3 +181,6 @@ desktop.ini
 
 # Input Files with Personal Data
 *.csv
+
+# Ignore config file which contains secrets
+config.py

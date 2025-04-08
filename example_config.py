@@ -1,0 +1,5 @@
+YOUR_EMAIL = 'your-email@gmail.com'
+APP_PASSWORD = 'your-app-password'
+EMAIL_SUBJECT = 'Your email subject here'
+DOCX_PATH = 'email_template.docx'
+CSV_PATH = 'recipients.csv'
