@@ -65,6 +65,25 @@ If your name isn’t displayed correctly in the outgoing emails sent through the
 5. In the popup, enter your preferred name in the empty box.
 6. Select the box next to your preferred name and click **Save Changes**.
 
+## 📙 Formatting Support
+
+- **Text styling**: Bold, italic, underline ✅
+- **Font color** and **size** preserved ✅
+- **Hyperlinks** preserved ✅
+- **Lists** (bulleted/numbered) preserved ✅
+- **Emojis** are fully supported 🎉
+- Font family/type: Gmail supports standard web-safe fonts. While font type isn't explicitly preserved, styled output will generally match default rendering in email clients.
+
+You can use emojis directly in your .docx or CSV — for example:
+
+```
+Hi $firstname 👋,
+
+Thanks for attending our event 🎉
+
+Let’s stay connected! 🤝
+```
+
 ## 📄 Example
 
 **recipients.csv**:
@@ -82,7 +101,7 @@ It was great meeting you at $company. Hope you enjoyed our talk about modern sec
 Click here to visit our site: https://example.com
 
 Best,
-Aaron Wurthmann
+Aaron
 ```
 
 ## ✅ Output
