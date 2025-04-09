@@ -29,6 +29,8 @@ cd docx-mail-merge-gmail
 3. Choose **App: Mail** and **Device: Other (e.g., MyComputer)**
 4. Copy the 16-character app password
 
+> 🔐 **Security Tip:** For extra safety, consider changing or revoking your App Password after each use, or on a regular basis.
+
 ### 3. Create a `config.py` File
 1. Copy the example config:
    ```bash
@@ -54,6 +56,11 @@ pip install -r requirements.txt
 ```bash
 python main.py
 ```
+
+### 6. (Optional) Rotate or Revoke App Password
+For additional security, it’s a good practice to delete your App Password after you’ve completed your mail merge, or at least rotate it regularly.
+
+You can manage or revoke it here: [https://myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
 
 ## 💬 Optional: Change the Sender Name in Gmail
 If your name isn’t displayed correctly in the outgoing emails sent through the Gmail integration, you can fix it easily:
