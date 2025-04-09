@@ -1,3 +1,4 @@
+SENDER_NAME = 'Your Name'
 YOUR_EMAIL = 'your-email@gmail.com'
 APP_PASSWORD = 'your-app-password'
 EMAIL_SUBJECT = 'Your email subject here'

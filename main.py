@@ -2,13 +2,12 @@
 
 import csv
 import smtplib
-import re
 from email.mime.text import MIMEText
+from email.utils import formataddr
 from docx import Document
 from docx.oxml.ns import qn
 from string import Template
 import config
-from docx.oxml import OxmlElement
 
 
 def get_paragraph_html(paragraph):
@@ -79,7 +78,6 @@ def get_paragraph_html(paragraph):
 
             html += text
 
-    # This return must be at base indentation
     if paragraph.style.name.lower().startswith("list"):
         return f"<li>{html}</li>"
     else:
@@ -100,7 +98,7 @@ def read_csv(filepath):
 def send_email(to_address, subject, html_body):
     msg = MIMEText(html_body, 'html')
     msg['Subject'] = subject
-    msg['From'] = config.YOUR_EMAIL
+    msg['From'] = formataddr((config.SENDER_NAME, config.YOUR_EMAIL))
     msg['To'] = to_address
 
     try:

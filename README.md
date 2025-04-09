@@ -38,6 +38,7 @@ cd docx-mail-merge-gmail
    ```
 2. Edit `config.py` and fill in your info:
 ```python
+SENDER_NAME = 'Your Name'
 YOUR_EMAIL = 'your-email@gmail.com'
 APP_PASSWORD = 'your-app-password'
 EMAIL_SUBJECT = 'Your email subject here'
