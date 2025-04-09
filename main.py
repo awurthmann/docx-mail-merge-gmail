@@ -2,6 +2,7 @@
 
 import csv
 import smtplib
+import re
 from email.mime.text import MIMEText
 from docx import Document
 from docx.oxml.ns import qn
@@ -32,6 +33,14 @@ def get_paragraph_html(paragraph):
             bold = italic = underline = False
             color = None
             size = None
+
+            from docx.text.run import Run
+            try:
+                r_obj = Run(child, paragraph)
+                if r_obj.font.color and r_obj.font.color.rgb:
+                    color = str(r_obj.font.color.rgb)
+            except Exception:
+                pass
 
             r_fonts = child.find("w:rPr", namespaces=paragraph.part.element.nsmap)
             if r_fonts is not None:
