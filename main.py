@@ -7,57 +7,86 @@ from docx import Document
 from docx.oxml.ns import qn
 from string import Template
 import config
+from docx.oxml import OxmlElement
+
 
 def get_paragraph_html(paragraph):
     html = ""
-    for run in paragraph.runs:
-        text = run.text
-        if not text.strip():
-            continue
+    rels = paragraph.part.rels
+    p_xml = paragraph._p
 
-        r = run._element
-        hyperlink = r.find(".//w:hyperlink", namespaces={'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'})
-        if hyperlink is not None:
-            r_id = hyperlink.get(qn('r:id'))
-            rel = paragraph.part.rels.get(r_id)
-            if rel:
-                url = rel.target_ref
-                text = f'<a href="{url}">{text}</a>'
+    for child in p_xml:
+        tag = child.tag.split('}')[-1]
 
-        # Apply text formatting
-        if run.bold:
-            text = f"<strong>{text}</strong>"
-        if run.italic:
-            text = f"<em>{text}</em>"
-        if run.underline:
-            text = f"<u>{text}</u>"
+        if tag == "hyperlink":
+            r_id = child.get(qn('r:id'))
+            url = rels[r_id].target_ref if r_id in rels else ""
+            link_text = ""
+            for r in child.findall(".//w:t", namespaces=paragraph.part.element.nsmap):
+                link_text += r.text or ""
+            if url:
+                html += f'<a href="{url}">{link_text}</a>'
 
-        # Inline style: color and font size
-        style = ""
-        if run.font.color and run.font.color.rgb:
-            style += f"color:#{run.font.color.rgb};"
-        if run.font.size:
-            pt_size = int(run.font.size.pt)
-            style += f"font-size:{pt_size}px;"
-        if style:
-            text = f'<span style="{style}">{text}</span>'
+        elif tag == "r":
+            text = ""
+            bold = italic = underline = False
+            color = None
+            size = None
 
-        html += text
+            r_fonts = child.find("w:rPr", namespaces=paragraph.part.element.nsmap)
+            if r_fonts is not None:
+                bold = r_fonts.find("w:b", namespaces=paragraph.part.element.nsmap) is not None
+                italic = r_fonts.find("w:i", namespaces=paragraph.part.element.nsmap) is not None
+                underline = r_fonts.find("w:u", namespaces=paragraph.part.element.nsmap) is not None
 
-    # Check if this is a list paragraph
+                color_el = r_fonts.find("w:color", namespaces=paragraph.part.element.nsmap)
+                if color_el is not None and color_el.get("w:val"):
+                    color = color_el.get("w:val")
+
+                size_el = r_fonts.find("w:sz", namespaces=paragraph.part.element.nsmap)
+                if size_el is not None and size_el.get("w:val"):
+                    try:
+                        size = int(size_el.get("w:val")) / 2  # half-points to pt
+                    except ValueError:
+                        pass
+
+            for t in child.findall(".//w:t", namespaces=paragraph.part.element.nsmap):
+                text += t.text or ""
+
+            if bold:
+                text = f"<strong>{text}</strong>"
+            if italic:
+                text = f"<em>{text}</em>"
+            if underline:
+                text = f"<u>{text}</u>"
+
+            style = ""
+            if color:
+                style += f"color:#{color};"
+            if size:
+                style += f"font-size:{int(size)}pt;"
+            if style:
+                text = f'<span style="{style}">{text}</span>'
+
+            html += text
+
+    # This return must be at base indentation
     if paragraph.style.name.lower().startswith("list"):
         return f"<li>{html}</li>"
     else:
         return f"<p>{html}</p>"
+
 
 def read_docx_template(filepath):
     doc = Document(filepath)
     html_parts = [get_paragraph_html(p) for p in doc.paragraphs]
     return "\n".join(html_parts)
 
+
 def read_csv(filepath):
     with open(filepath, newline='', encoding='utf-8') as f:
         return list(csv.DictReader(f))
+
 
 def send_email(to_address, subject, html_body):
     msg = MIMEText(html_body, 'html')
@@ -73,6 +102,7 @@ def send_email(to_address, subject, html_body):
     except Exception as e:
         print(f"Error sending to {to_address}: {e}")
 
+
 def main():
     raw_html = read_docx_template(config.DOCX_PATH)
     template = Template(raw_html)
@@ -81,6 +111,7 @@ def main():
     for row in recipients:
         personalized_html = template.safe_substitute(row)
         send_email(row['email'], config.EMAIL_SUBJECT, personalized_html)
+
 
 if __name__ == '__main__':
     main()
